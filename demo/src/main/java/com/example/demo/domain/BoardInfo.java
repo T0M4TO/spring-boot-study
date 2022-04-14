@@ -10,6 +10,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -17,7 +19,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class BoardInfo {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 10, nullable = false)
@@ -38,6 +40,9 @@ public class BoardInfo {
 
     @LastModifiedDate
     private LocalDateTime modifiedDate;
+
+    @OneToMany(mappedBy="boardInfo", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentInfo> comments = new ArrayList<CommentInfo>();
 
     @Builder
     public BoardInfo(Long id, String author, String title, String content, Long fileId) {

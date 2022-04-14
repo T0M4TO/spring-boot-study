@@ -102,7 +102,7 @@ public class BoardController {
     public String detail(@PathVariable("id") Long id, Model model) {
         BoardInfoDto boardDto = boardService.getPost(id);
         FileInfoDto fileDto = fileService.getFile(boardDto.getFileId());
-        List<CommentInfoDto> commentDtoList = commentService.getCommentList();
+        List<CommentInfoDto> commentDtoList = commentService.getCommentList(id);
 
         model.addAttribute("post", boardDto);
         model.addAttribute("file",fileDto);
@@ -167,6 +167,12 @@ public class BoardController {
         return "redirect:/";
     }
 
+    @DeleteMapping("/comment/{boardId}/{id}")
+    public String deleteComment(@PathVariable("boardId") Long boardId, @PathVariable("id") Long id) {
+        commentService.deleteComment(id);
+        return "redirect:/post/"+boardId;
+    }
+
     @GetMapping("/download/{fileId}")
     public ResponseEntity<Resource> fileDownload(@PathVariable("fileId") Long fileId) throws IOException {
         FileInfoDto fileDto = fileService.getFile(fileId);
@@ -179,7 +185,7 @@ public class BoardController {
     }
 
     @PostMapping("/comment")
-    public String addcomment(CommentInfoDto commentDto) {
+    public String addcomment(@RequestParam("boardId") Long boardId, CommentInfoDto commentDto) {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (principal instanceof UserDetails) {
@@ -189,10 +195,10 @@ public class BoardController {
                 String username = principal.toString();
                 commentDto.setAuthor(username);
             }
-            commentService.saveComment(commentDto);
+            commentService.saveComment(boardId, commentDto);
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return "redirect:/";
+        return "redirect:/post/"+boardId;
     }
 }

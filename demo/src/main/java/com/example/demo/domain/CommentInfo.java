@@ -1,5 +1,7 @@
 package com.example.demo.domain;
 
+import com.example.demo.dto.BoardInfoDto;
+import com.example.demo.repository.BoardRepository;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Getter
 @Entity
@@ -17,7 +20,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public class CommentInfo {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 10, nullable = false)
@@ -33,10 +36,15 @@ public class CommentInfo {
     @LastModifiedDate
     private LocalDateTime modifiedDate;
 
+    @ManyToOne
+    @JoinColumn(name ="boardInfo_id")
+    private BoardInfo boardInfo;
+
     @Builder
-    public CommentInfo(Long id, String author, String content) {
+    public CommentInfo(Long id, String author, String content, BoardInfo boardInfo) {
         this.id = id;
         this.author = author;
         this.content = content;
+        this.boardInfo = boardInfo;
     }
 }

@@ -11,31 +11,41 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentService {
     private CommentRepository commentRepository;
+    private BoardRepository boardRepository;
 
-    public CommentService(CommentRepository commentRepository) {
+    public CommentService(CommentRepository commentRepository, BoardRepository boardRepository) {
         this.commentRepository = commentRepository;
+        this.boardRepository = boardRepository;
     }
+
     @Transactional
-    public Long saveComment(CommentInfoDto commentDto) {
+    public Long saveComment(Long boardId, CommentInfoDto commentDto) {
+        BoardInfo boardInfo = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("해당 boardId가 없습니다. id=" + boardId));
+        commentDto.setBoardInfo(boardInfo);
         return commentRepository.save(commentDto.toEntity()).getId();
     }
+
     @Transactional
-    public List<CommentInfoDto> getCommentList() {
+    public List<CommentInfoDto> getCommentList(Long id) {
         List<CommentInfo> commentList = commentRepository.findAll();
         List<CommentInfoDto> commentDtoList = new ArrayList<>();
-
-        for(CommentInfo comment : commentList) {
-            CommentInfoDto commentDto = CommentInfoDto.builder()
-                    .id(comment.getId())
-                    .author(comment.getAuthor())
-                    .content(comment.getContent())
-                    .createdDate(comment.getCreatedDate())
-                    .build();
-            commentDtoList.add(commentDto);
+        for (CommentInfo comment : commentList) {
+            System.out.println("bbbbb : "+comment.getBoardInfo().getId());
+            System.out.println("bbbbb : "+id);
+            if (comment.getBoardInfo().getId() == id) {
+                CommentInfoDto commentDto = CommentInfoDto.builder()
+                        .id(comment.getId())
+                        .author(comment.getAuthor())
+                        .content(comment.getContent())
+                        .createdDate(comment.getCreatedDate())
+                        .build();
+                commentDtoList.add(commentDto);
+            }
         }
         return commentDtoList;
     }
