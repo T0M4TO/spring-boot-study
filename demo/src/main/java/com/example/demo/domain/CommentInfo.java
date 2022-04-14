@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class BoardInfo {
+public class CommentInfo {
     @Id
     @GeneratedValue
     private Long id;
@@ -23,14 +23,8 @@ public class BoardInfo {
     @Column(length = 10, nullable = false)
     private String author;
 
-    @Column(length = 100, nullable = false)
-    private String title;
-
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
-
-    @Column
-    private Long fileId;
 
     @CreatedDate
     @Column(updatable = false)
@@ -40,11 +34,9 @@ public class BoardInfo {
     private LocalDateTime modifiedDate;
 
     @Builder
-    public BoardInfo(Long id, String author, String title, String content, Long fileId) {
+    public CommentInfo(Long id, String author, String content) {
         this.id = id;
         this.author = author;
-        this.title = title;
         this.content = content;
-        this.fileId = fileId;
     }
 }

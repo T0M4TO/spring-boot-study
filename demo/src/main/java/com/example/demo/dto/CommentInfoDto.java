@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import com.example.demo.domain.BoardInfo;
+import com.example.demo.domain.CommentInfo;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -9,33 +10,27 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @NoArgsConstructor
-public class BoardInfoDto {
+public class CommentInfoDto {
     private Long id;
     private String author;
-    private String title;
     private String content;
-    private Long fileId;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    public BoardInfo toEntity() {
-        BoardInfo build = BoardInfo.builder()
+    public CommentInfo toEntity() {
+        CommentInfo build = CommentInfo.builder()
                 .id(id)
                 .author(author)
-                .title(title)
                 .content(content)
-                .fileId(fileId)
                 .build();
         return build;
     }
 
     @Builder
-    public BoardInfoDto(Long id, String author, String title, String content, Long fileId, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public CommentInfoDto(Long id, String author, String content, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.author = author;
-        this.title = title;
         this.content = content;
-        this.fileId = fileId;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }

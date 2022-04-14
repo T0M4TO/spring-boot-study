@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.BoardInfo;
+import com.example.demo.domain.CommentInfo;
 import com.example.demo.dto.BoardInfoDto;
+import com.example.demo.dto.CommentInfoDto;
 import com.example.demo.repository.BoardRepository;
-import lombok.RequiredArgsConstructor;
+import com.example.demo.repository.CommentRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -11,51 +13,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class BoardService {
-    private BoardRepository boardRepository;
+public class CommentService {
+    private CommentRepository commentRepository;
 
-    public BoardService(BoardRepository boardRepository) {
-        this.boardRepository = boardRepository;
+    public CommentService(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
     }
     @Transactional
-    public Long savePost(BoardInfoDto boardDto) {
-        return boardRepository.save(boardDto.toEntity()).getId();
+    public Long saveComment(CommentInfoDto commentDto) {
+        return commentRepository.save(commentDto.toEntity()).getId();
     }
     @Transactional
-    public List<BoardInfoDto> getBoardList() {
-        List<BoardInfo> boardList = boardRepository.findAll();
-        List<BoardInfoDto> boardDtoList = new ArrayList<>();
+    public List<CommentInfoDto> getCommentList() {
+        List<CommentInfo> commentList = commentRepository.findAll();
+        List<CommentInfoDto> commentDtoList = new ArrayList<>();
 
-        for(BoardInfo board : boardList) {
-            BoardInfoDto boardDto = BoardInfoDto.builder()
-                    .id(board.getId())
-                    .author(board.getAuthor())
-                    .title(board.getTitle())
-                    .content(board.getContent())
-                    .createdDate(board.getCreatedDate())
+        for(CommentInfo comment : commentList) {
+            CommentInfoDto commentDto = CommentInfoDto.builder()
+                    .id(comment.getId())
+                    .author(comment.getAuthor())
+                    .content(comment.getContent())
+                    .createdDate(comment.getCreatedDate())
                     .build();
-            boardDtoList.add(boardDto);
+            commentDtoList.add(commentDto);
         }
-        return boardDtoList;
+        return commentDtoList;
     }
 
     @Transactional
-    public BoardInfoDto getPost(Long id) {
-        BoardInfo board = boardRepository.findById(id).get();
-
-        BoardInfoDto boardDto = BoardInfoDto.builder()
-                .id(board.getId())
-                .author(board.getAuthor())
-                .title(board.getTitle())
-                .content(board.getContent())
-                .fileId(board.getFileId())
-                .createdDate(board.getCreatedDate())
-                .build();
-        return boardDto;
-    }
-
-    @Transactional
-    public void deletePost(Long id) {
-        boardRepository.deleteById(id);
+    public void deleteComment(Long id) {
+        commentRepository.deleteById(id);
     }
 }
