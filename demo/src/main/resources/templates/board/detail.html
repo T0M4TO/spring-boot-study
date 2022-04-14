@@ -55,7 +55,7 @@
                 <span th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
             </td>
             <td>
-                <button class="btn btn-info" th:onclick="@{'location.href=/comment/edit/' + ${comment.id}}" role="button">수정</button>
+                <a class="btn btn-info" th:href="@{'/comment/' + ${post.id} + '/' + ${comment.id}}" role="button">수정</a>
                 <form id="deleteComment-form" th:action="@{'/comment/'+ ${post.id} +'/' + ${comment.id}}" method="post">
                     <input type="hidden" name="_method" value="delete"/>
                     <button id="deleteComment-btn" type="submit" class="btn btn-danger">삭제</button>

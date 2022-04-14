@@ -118,8 +118,17 @@ public class BoardController {
         return "board/edit";
     }
 
+    @GetMapping("/comment/{boardId}/{id}")
+    public String commentEdit(@PathVariable("boardId") Long boardId, @PathVariable("id") Long id, Model model) {
+        CommentInfoDto commentDto = commentService.getComment(id);
+        BoardInfoDto boardDto = boardService.getPost(boardId);
+        model.addAttribute("comment", commentDto);
+        model.addAttribute("post", boardDto);
+        return "board/commentEdit";
+    }
+
     @PutMapping("/post/edit/{id}")
-    public String update(@RequestParam("file") MultipartFile files, BoardInfoDto boardDto) {
+    public String update(@PathVariable("id") Long id, @RequestParam("file") MultipartFile files, BoardInfoDto boardDto) {
         try {
             String origFilename = files.getOriginalFilename();
             String filename = new MD5Generator(origFilename).toString();
@@ -154,11 +163,30 @@ public class BoardController {
             }
 
             boardDto.setFileId(fileId);
+            System.out.println("bbbbbbbbbb : "+boardDto);
             boardService.savePost(boardDto);
         } catch(Exception e) {
             e.printStackTrace();
         }
-        return "redirect:/";
+        return "redirect:/post/"+id;
+    }
+
+    @PutMapping("/comment/{boardId}/{id}")
+    public String editcomment(@PathVariable("boardId") Long boardId, @PathVariable("id") Long id, CommentInfoDto commentDto) {
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails) {
+                String username = ((UserDetails)principal).getUsername();
+                commentDto.setAuthor(username);
+            } else {
+                String username = principal.toString();
+                commentDto.setAuthor(username);
+            }
+            commentService.editComment(boardId, id, commentDto);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/post/"+boardId;
     }
 
     @DeleteMapping("/post/{id}")

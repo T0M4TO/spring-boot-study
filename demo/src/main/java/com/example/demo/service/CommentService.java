@@ -24,9 +24,30 @@ public class CommentService {
     }
 
     @Transactional
+    public CommentInfoDto getComment(Long id) {
+        CommentInfo comment = commentRepository.findById(id).get();
+
+        CommentInfoDto commentDto = CommentInfoDto.builder()
+                .id(comment.getId())
+                .author(comment.getAuthor())
+                .content(comment.getContent())
+                .createdDate(comment.getCreatedDate())
+                .build();
+        return commentDto;
+    }
+
+    @Transactional
     public Long saveComment(Long boardId, CommentInfoDto commentDto) {
         BoardInfo boardInfo = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("해당 boardId가 없습니다. id=" + boardId));
         commentDto.setBoardInfo(boardInfo);
+        return commentRepository.save(commentDto.toEntity()).getId();
+    }
+
+    @Transactional
+    public Long editComment(Long boardId, Long id, CommentInfoDto commentDto) {
+        BoardInfo boardInfo = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("해당 boardId가 없습니다. id=" + boardId));
+        commentDto.setBoardInfo(boardInfo);
+        commentDto.setId(id);
         return commentRepository.save(commentDto.toEntity()).getId();
     }
 
