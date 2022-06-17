@@ -3,10 +3,7 @@ package com.example.demo.domain;
 import java.util.*;
 import javax.persistence.*;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
+
 public class UserInfo implements UserDetails {
 
   @Id
@@ -31,7 +29,8 @@ public class UserInfo implements UserDetails {
   private String auth;
 
   @Builder
-  public UserInfo(String email, String password, String auth) {
+  public UserInfo(Long code, String email, String password, String auth) {
+    this.code = code;
     this.email = email;
     this.password = password;
     this.auth = auth;

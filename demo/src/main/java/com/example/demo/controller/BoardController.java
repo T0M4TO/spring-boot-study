@@ -3,9 +3,11 @@ package com.example.demo.controller;
 import com.example.demo.dto.BoardInfoDto;
 import com.example.demo.dto.CommentInfoDto;
 import com.example.demo.dto.FileInfoDto;
+import com.example.demo.dto.UserInfoDto;
 import com.example.demo.service.BoardService;
 import com.example.demo.service.CommentService;
 import com.example.demo.service.FileService;
+import com.example.demo.service.UserService;
 import com.example.demo.util.MD5Generator;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -28,12 +30,14 @@ import java.util.List;
 
 @Controller
 public class BoardController {
+    private UserService userService;
     private BoardService boardService;
     private FileService fileService;
     private CommentService commentService;
 
 
-    public BoardController(BoardService boardService, FileService fileService, CommentService commentService) {
+    public BoardController(UserService userService, BoardService boardService, FileService fileService, CommentService commentService) {
+        this.userService = userService;
         this.boardService = boardService;
         this.fileService = fileService;
         this.commentService = commentService;
@@ -51,7 +55,17 @@ public class BoardController {
     }
 
     @GetMapping("/post")
-    public String post() {
+    public String post(Model model) {
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = ((UserDetails)principal).getUsername();
+            UserInfoDto userDto = userService.getCode(username);
+            System.out.println(userDto);
+            model.addAttribute("user", userDto);
+        } catch (NullPointerException e) {
+            System.out.println("123123 : error");
+            return "board/post";
+        }
         return "board/post";
     }
 
