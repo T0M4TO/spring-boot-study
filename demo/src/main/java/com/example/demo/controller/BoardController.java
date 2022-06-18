@@ -8,6 +8,7 @@ import com.example.demo.service.BoardService;
 import com.example.demo.service.CommentService;
 import com.example.demo.service.FileService;
 import com.example.demo.service.UserService;
+import com.example.demo.util.JwtAuthenticationProvider;
 import com.example.demo.util.MD5Generator;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -21,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +36,8 @@ public class BoardController {
     private BoardService boardService;
     private FileService fileService;
     private CommentService commentService;
+    private JwtAuthenticationProvider jwtAuthenticationProvider = new JwtAuthenticationProvider();
+
 
 
     public BoardController(UserService userService, BoardService boardService, FileService fileService, CommentService commentService) {
@@ -55,12 +59,16 @@ public class BoardController {
     }
 
     @GetMapping("/post")
-    public String post(Model model) {
+    public String post(Model model, HttpServletRequest req) {
         try {
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String username = ((UserDetails)principal).getUsername();
-            UserInfoDto userDto = userService.getCode(username);
-            System.out.println(userDto);
+            //System.out.println("123123 : "+jwtAuthenticationProvider.getUserCode(req.getCookies()[0].getValue()));
+            //Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            //String username = ((UserDetails)principal).getUsername();
+            //UserInfoDto userDto = userService.getCode(username);
+            //System.out.println(userDto);
+            UserInfoDto userDto = UserInfoDto.builder()
+                    .code(jwtAuthenticationProvider.getUserCode(req.getCookies()[0].getValue()))
+                    .build();
             model.addAttribute("user", userDto);
         } catch (NullPointerException e) {
             System.out.println("123123 : error");

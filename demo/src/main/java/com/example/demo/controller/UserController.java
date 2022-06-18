@@ -43,8 +43,15 @@ public class UserController {
     return "redirect:login";
   }
 
-  @PostMapping("/login")
-  public UserInfoDto login(UserInfoDto user, HttpServletResponse response) {
+  @GetMapping(value = "/login")
+  public String login() {
+    return "login";
+  }
+
+  @PostMapping(value = "/login")
+  public String login(UserInfoDto user, HttpServletResponse response) {
+    System.out.println("3333333 : ");
+    System.out.println("3333333 : "+userRepository.findByEmail(user.getEmail()));
     if(userRepository.findByEmail(user.getEmail()) == null)
     {
       throw new IllegalArgumentException("가입되지 않은 E-MAIL 입니다.");
@@ -57,14 +64,14 @@ public class UserController {
 
     String token = jwtAuthenticationProvider.createToken(member.getCode(),member.getUsername(), member.getAuth());
     response.setHeader("X-AUTH-TOKEN", token);
-
+    System.out.println(token);
     Cookie cookie = new Cookie("X-AUTH-TOKEN", token);
     cookie.setPath("/");
     cookie.setHttpOnly(true);
     cookie.setSecure(true);
     response.addCookie(cookie);
 
-    return new UserInfoDto(member.getCode(),member.getUsername(),member.getPassword(),member.getAuth());
+    return "board/list";
   }
 
   @GetMapping(value = "/logout")
